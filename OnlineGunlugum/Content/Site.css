@@ -1,0 +1,66 @@
+﻿html, body, .container-fluid {
+    height:100%;
+}
+
+.containerRow {
+    height:100%;
+}
+
+#menuPanel {
+    padding-top:50px;
+    overflow:auto;
+    /*taşmayı engelliyor*/
+    background-color:lightgoldenrodyellow;
+    height:100%;
+        
+}
+
+.icerikSutun {
+    padding-top:50px;
+    height:100%;
+    background-color:indianred;
+}
+
+#icerikPanel {
+    display:table;
+    height:100%;
+    width:100%;
+}
+
+.baslikContainer {
+    display:table-row;
+}
+
+.txtBaslikContainer {
+    padding:5px 0px;
+}
+.icerikContainer {
+    display:table-row;
+    height:100%;
+}
+.txtIcerikContainer {
+    height:100%;
+    padding: 5px 0px;
+}
+#txtIcerik {
+    height:100%;
+    resize:none;
+/*resize none yaptik text araa daki şekil bozmayı engelledik*/
+}
+
+.buttonContainer {
+    padding:5px 0px 10px  0px;
+/*yukaridan 5 aşağıdan 10 px boşluk bıraktım*/
+text-align:right;
+}
+
+.statusDiv {
+    float:left;
+    padding-top:5px;
+}
+
+#statusMessage {
+    display:none;
+/*bu kısmın gözükmesini istemiyorum*/
+}
+

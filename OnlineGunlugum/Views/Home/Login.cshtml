@@ -1,0 +1,234 @@
+﻿
+@{
+    Layout = null;
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Günlük-Giriş</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Login.css" rel="stylesheet" />
+    @* login add syle sheet deyip adını login yaptim hocanin css dosyasini kopyaladim login.css yapistirdim *@
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="panel panel-login">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <a href="#" class="active" id="login-form-link">
+                                    GİRİŞ
+                                </a>
+                            </div>
+
+                            <div class="col-xs-6">
+                                <a href="#" id="register-form-link">
+                                    KAYIT OL
+                                </a>
+                            </div>
+                        </div>
+
+                        <hr />
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                @* ilk form giriş yaptığımızda *@
+                                <form id="login-form" action="#" method="post" role="form" style="display:block;">
+                                    @* kullanıcı hatalı giriş yaptığında yada başarılı giriş yaptığında alert vericem bunlari saklicam jquery ile açığa çıkaricam *@
+
+                                    <div class="alert alert-success hidden" id="login-success-alert-container">
+                                        Başarıyla Giriş Yaptınız Şimdi Günlüğe Yönlendiriliyorsunuz...
+                                        @* belli bir süre bekletip bu alerti yönlendiricem,şimdi hata alerti oluşturuyorum *@
+                                    </div>
+                                    <div class="alert alert-danger hidden" id="login-error-alert-container">
+                                        <ul id="login-error-list"></ul>
+                                        @* birden çok hata mesajı verebilir *@
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Kullanıcı Adı" value="" />
+
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Şifre" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-sm-offset-3">
+                                                <input type="button" name="login-submit" id="login-submit"  tabindex="4" class="form-control btn btn-login" value="GİRİŞ YAP" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                @* register tarafi için yeni form açıyorum *@
+
+                                <form id="register-form" action="#" method="post" role="form" style="display:none;">
+
+                                    <div class="alert alert-success hidden" id="register-success-alert-container">
+                                        Kaydınız başarıyla gerçeklemiştir.Artık giriş yapabilirsiniz.
+                                    </div>
+
+                                    <div class="alert alert-danger hidden" id="register-error-alert-container">
+                                        <ul id="register-error-list"></ul>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="email"name="email" id="remail" tabindex="1" class="form-control" placeholder="e-mail Adresi" value="" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="password" name="password" id="rpassword" tabindex="2" class="form-control" placeholder="Şifre" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="password" name="confirm-password" id="rconfirm-password" tabindex="3" class="form-control" placeholder="Şifre Tekrar" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-sm-offset-3">
+                                                <input type="button" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="KAYIT OL" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+</body>
+</html>
+
+
+
+
+
+<script>
+    $(function () {
+        $("#login-submit").click(function () {
+            $.ajax({
+                method: "post",
+                url: "/Token",
+                data: {
+                    "grant_type": "password",
+                    "username": $("#username").val(),
+                    "password": $("#password").val()
+                    //idlerin önüne dies koymayı unutma
+                },
+                error: function (xhr, status, error) {
+                    //3 ü de benim parametrem hata olması durumunda listeleyeceğim tüm hatalari ayarliyorum
+
+                    var result = JSON.parse(xhr.responseText);
+                    $("#login-error-list").html("");
+                    $("#login-error-list").append('<li>' + result.error_description + '</li>');
+                    $("#login-error-alert-container").removeClass("hidden");
+
+                },
+                //giriş başariliysa olacak olanlar
+                success: function (data, status, xhr) {
+                    var result = JSON.parse(xhr.responseText);
+                    //bir kez hatali giriş yapmış  olabilirsin
+                    $("#login-error-alert-container").addClass("hidden");
+
+                    $("#login-success-alert-container").removeClass("hidden");
+                    $("#username").val("");
+                    $("#password").val("");
+
+                    //bir saniye bekleicem ve anasayfaya yönlendirecem
+
+                    sessionStorage.tokenKey = result.access_token;
+                    //başarılı birşekilde giriş yaptığı anda server daki token i depoluyorum
+
+                    setTimeout(function () {
+                        window.location.href = "/";
+                        //anasayfaya yönlendir lafi bu ama neden sadece slash koydum,home slash index route config te kayitli ise buraya sadece / koyarsam da anasayfaya gider,şu an test edemem kullanıcının olmasi lazım kayit ol butonunun olmasi lazım
+                    }, 1000);
+                    //bir saniye sonra çalıştır dedim
+                }
+            });
+        });
+
+        $("#register-submit").click(function () {
+            $.ajax({
+                method: "post",
+                url: "/api/Account/Register",
+                //account controller url aldim basina / koydum
+                data: {
+                    "Email": $("#remail").val(),
+                    "Password": $("#rpassword").val(),
+                    "ConfirmPassword": $("#rconfirm-password").val()
+                },
+                error: function (xhr, status, error) {
+                    var result = JSON.parse(xhr.responseText);
+                    $("#register-error-list").html("");
+                    //burasi yanliş oldu
+
+                    for (var k in result.ModelState) {
+                        $("#register-error-list").append('<li>' + result.ModelState[k] + '</li>');
+                    }
+
+                    $("#register-error-alert-container").removeClass("hidden");
+                    //belki açık kalmış olabilir diye success kisminda da aynısını yapiyorum
+                    $("#register-success-alert-container").addClass("hidden");
+                },
+                success: function () {
+                    //bana ok in içerisinde bişey döndürmediği için parametre kisminin içini boş bırakıyorum
+                    $("#register-error-alert-container").addClass("hidden");
+                    //belki açık kalmış olabilir diye success kisminda da aynısını yapiyorum
+                    $("#register-success-alert-container").removeClass("hidden");
+
+                    $("#remail").val("");
+                    $("#rpassword").val("");
+                    $("#rconfirm-password").val("");
+                }
+                    
+            });
+        });
+
+        $("#login-form-link").click(function (e) {
+            $("#login-form").delay(100).fadeIn(100);
+            //iki sekmem var,Biri 100ms gözükürken diğeri kaybolacak
+
+            $("#register-form").fadeOut(100);
+            $("#register-form-link").removeClass("active");
+            //giriş e bastim active olan class i silip
+            $(this).addClass("active");
+            e.preventDefault();
+            //bu komut tıklama event ini es geçer herhangi bir yere yönlenme der.ayrıca url in sonuna # işareti koymayı engeller...
+        });
+
+        $("#register-form-link").click(function (e) {
+            $("#register-form").delay(100).fadeIn(100);
+            //iki sekmem var,Biri 100ms gözükürken diğeri kaybolacak
+
+            $("#login-form").fadeOut(100);
+            $("#login-form-link").removeClass("active");
+            //giriş e bastim active olan class i silip
+            $(this).addClass("active");
+            e.preventDefault();
+            //bu komut tıklama event ini es geçer herhangi bir yere yönlenme der.ayrıca url in sonuna # işareti koymayı engeller...
+        });
+
+        //c@c.com
+        //Ankara1.
+    });
+   
+</script>
